@@ -34,8 +34,12 @@ export default function LoginForm() {
         }
       );
 
-      toast.success(res.data.message || "Login successful");
-      reset(); // clear form
+      toast.success("Login successful");
+      console.log(res.data);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("id", res.data.user.id);
+      router.push("/awaiting-approval");
+      reset();
     } catch (error) {
       console.error("Login error:", error);
 
@@ -46,6 +50,7 @@ export default function LoginForm() {
           errorMsg ===
           "Your account is pending approval. Please wait for admin approval."
         ) {
+          localStorage.setItem("id", 3);
           router.push("/awaiting-approval");
         } else {
           toast.error(errorMsg);

@@ -4,37 +4,92 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Clock, RefreshCcw, Loader2 } from "lucide-react";
 import { BebasNeue } from "@/fonts/fonts";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
 
 export default function PendingApprovalPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("pending");
-  // ⬆️ you can manually change this state to test both conditions
 
-  const handleRefresh = () => {
+  // refresh button handler
+  const handleRefresh = async () => {
     setLoading(true);
-
-    setTimeout(() => {
-      if (status === "pending") {
-        toast.error("Your request is still pending.");
+    try {
+      const id = localStorage.getItem("id");
+      if (!id) {
+        toast.error("User ID not found.");
         setLoading(false);
-      } else if (status === "approved") {
-        setLoading(false);
-        toast.success("Your request has been approved!");
-        setTimeout(() => {
-          router.push("/aprve");
-        }, 2000);
+        return;
       }
-    }, 1500);
+
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/login-status/${id}`
+      );
+      console.log(res.data);
+
+      const newStatus = res.data.loginStatus?.toLowerCase();
+      setStatus(newStatus);
+
+      if (newStatus === "approved") {
+        toast.success("Login request approved!");
+        setTimeout(() => {
+          router.push("/upload-file");
+        }, 1500);
+      } else if (newStatus === "rejected") {
+        toast.error("Login request rejected.");
+        router.push("/login");
+      } else {
+        toast.error("Your request is still pending.");
+      }
+    } catch (error) {
+      console.error("Refresh status check error:", error);
+      toast.error("Failed to fetch status. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // auto-check on mount
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const id = localStorage.getItem("id");
+        if (!id) return;
+
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/login-status/${id}`
+        );
+
+        console.log(res.data);
+
+        const newStatus = res.data.loginStatus?.toLowerCase();
+        setStatus(newStatus);
+        if (newStatus === "approved") {
+          toast.success("Login request approved!");
+          setTimeout(() => {
+            router.push("/upload-file");
+          }, 1500);
+        }
+        if (newStatus === "rejected") {
+          toast.error("Login request rejected.");
+          router.push("/login");
+        }
+      } catch (error) {
+        console.error("Initial status check error:", error);
+        toast.error("Failed to fetch status. Try again.");
+      }
+    };
+
+    checkStatus();
+  }, []);
 
   return (
     <div className="relative flex h-screen w-screen items-center justify-center bg-gray-100">
       <Toaster position="top-center" reverseOrder={false} />
 
-      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm"></div>
+      <div className="fixed inset-0 bg-black/20 backdrop-blur-md"></div>
 
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
