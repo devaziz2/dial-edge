@@ -27,7 +27,6 @@ export default function PendingApprovalPage() {
       const res = await axios.get(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/login-status/${id}`
       );
-      console.log(res.data);
 
       const newStatus = res.data.loginStatus?.toLowerCase();
       setStatus(newStatus);
@@ -61,8 +60,6 @@ export default function PendingApprovalPage() {
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/login-status/${id}`
         );
-
-        console.log(res.data);
 
         const newStatus = res.data.loginStatus?.toLowerCase();
         setStatus(newStatus);

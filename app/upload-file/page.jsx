@@ -103,8 +103,6 @@ export default function UploadCsvPage() {
         }
       );
 
-      console.log("Clean API res", res);
-
       // set modal data and open modal
       setModalData(res.data);
       setIsModalOpen(true);

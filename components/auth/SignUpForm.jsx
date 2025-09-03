@@ -19,16 +19,6 @@ export default function SignUpForm() {
 
   const onSubmit = async (data) => {
     try {
-      console.log("API body");
-      console.log({
-        firstname: data.firstName,
-        lastname: data.lastName,
-        email: data.email,
-        password: data.password,
-      });
-
-      console.log("API URL");
-      console.log(`${process.env.NEXT_PUBLIC_SERVER_URL}/signup`);
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/signup`,
         {

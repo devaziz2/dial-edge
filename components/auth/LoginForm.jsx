@@ -35,11 +35,10 @@ export default function LoginForm() {
       );
 
       toast.success("Login successful");
-      console.log(res.data);
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("id", res.data.user.id);
-      console.log("Current mail");
-      console.log(data.email);
+
       const email = data.email?.trim().toLowerCase();
 
       if (email === "afnan.malik@dialedgetelecom.com") {
