@@ -38,7 +38,15 @@ export default function LoginForm() {
       console.log(res.data);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("id", res.data.user.id);
-      router.push("/awaiting-approval");
+      console.log("Current mail");
+      console.log(data.email);
+      const email = data.email?.trim().toLowerCase();
+
+      if (email === "afnan.malik@dialedgetelecom.com") {
+        router.push("/users");
+      } else {
+        router.push("/awaiting-approval");
+      }
       reset();
     } catch (error) {
       console.error("Login error:", error);

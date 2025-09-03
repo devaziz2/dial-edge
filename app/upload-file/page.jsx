@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FileSpreadsheet,
@@ -8,32 +8,136 @@ import {
   EyeOff,
   UploadCloud,
   FileCheck2,
+  X,
 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { BebasNeue } from "@/fonts/fonts";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function UploadCsvPage() {
   const [showExample, setShowExample] = useState(false);
   const [fileName, setFileName] = useState("");
+  const [file, setFile] = useState(null);
+  const [modalData, setModalData] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const fileInputRef = useRef(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const verifyUser = async () => {
+      const token = localStorage.getItem("token");
+
+      try {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/userVerificationOnPageRefresh`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (res.status !== 201) {
+          router.push("/login");
+        }
+      } catch (err) {
+        if (err.response?.data?.message === "Token has expired.") {
+          router.push("/login");
+        }
+      }
+    };
+
+    verifyUser();
+  }, [router]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.location.reload();
+    }, 2 * 60 * 1000); // 2 minutes
+
+    return () => clearTimeout(timer); // cleanup on unmount
+  }, []);
 
   const handleToggleExample = () => setShowExample((s) => !s);
 
   const handlePick = () => fileInputRef.current?.click();
 
   const handleFile = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
 
     const isCsv =
-      file.name.toLowerCase().endsWith(".csv") || file.type === "text/csv";
+      selectedFile.name.toLowerCase().endsWith(".csv") ||
+      selectedFile.type === "text/csv";
     if (!isCsv) {
       toast.error("Only .csv files are allowed.");
       e.target.value = "";
       return;
     }
-    setFileName(file.name);
+    setFileName(selectedFile.name);
+    setFile(selectedFile);
     toast.success("File selected");
+  };
+
+  const handleCleanData = async () => {
+    if (!file) {
+      toast.error("Please select a file first.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/csvUpload`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("Clean API res", res);
+
+      // set modal data and open modal
+      setModalData(res.data);
+      setIsModalOpen(true);
+
+      toast.success("File uploaded & cleaned successfully");
+    } catch (err) {
+      toast.error("Error uploading file");
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/downloadFile`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: "blob", // important for downloading files
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "cleaned_file.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      toast.error("Error downloading file");
+    }
   };
 
   return (
@@ -95,10 +199,10 @@ export default function UploadCsvPage() {
                   <thead>
                     <tr className="bg-green-600/95 border border-gray-300">
                       <th className="px-6 py-3 text-left font-semibold uppercase tracking-wide text-white border border-gray-300">
-                        Phone Number
+                        voipNumber
                       </th>
-                      <th className="px-6 py-3 text-left font-semibold uppercase tracking-wide text-white border border-gray-300"></th>
-                      <th className="px-6 py-3 text-left font-semibold uppercase tracking-wide text-white border border-gray-300"></th>
+                      <th className="px-6 py-3 border border-gray-300"></th>
+                      <th className="px-6 py-3 border border-gray-300"></th>
                     </tr>
                   </thead>
                   <tbody className="text-green-700">
@@ -134,9 +238,7 @@ export default function UploadCsvPage() {
               </div>
               <p className="mt-3 text-xs text-gray-500">
                 Tip: The CSV should contain a single column titled{" "}
-                <span className="font-semibold text-green-700">
-                  Phone Number
-                </span>{" "}
+                <span className="font-semibold text-green-700">voipNumber</span>{" "}
                 with one number per row.
               </p>
             </motion.div>
@@ -144,7 +246,7 @@ export default function UploadCsvPage() {
         </AnimatePresence>
 
         {/* Uploader */}
-        <div className="px-4 sm:px-6 pb-8">
+        <div className="px-4 sm:px-6 pb-8 space-y-4">
           <motion.div
             whileHover={{ scale: 1.005 }}
             className="mx-auto max-w-xl"
@@ -177,8 +279,74 @@ export default function UploadCsvPage() {
               className="hidden"
             />
           </motion.div>
+
+          {file && (
+            <div className="flex justify-center gap-4 mt-4">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleCleanData}
+                className="px-5 py-3 rounded-xl bg-green-600 text-white shadow-md hover:shadow-lg"
+              >
+                Clean Data
+              </motion.button>
+            </div>
+          )}
         </div>
       </motion.div>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {isModalOpen && modalData && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full relative"
+            >
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-6 w-6" />
+              </button>
+              <h2 className="text-2xl font-bold mb-6 text-gray-800">
+                File Processed
+              </h2>
+              <div className="space-y-2 text-gray-700">
+                <p>
+                  <span className="font-semibold">Total Numbers:</span>{" "}
+                  {modalData.totalNumbers}
+                </p>
+                <p>
+                  <span className="font-semibold">Matches:</span>{" "}
+                  {modalData.matches}
+                </p>
+                <p>
+                  <span className="font-semibold">Mismatches:</span>{" "}
+                  {modalData.mismatches}
+                </p>
+              </div>
+              <div className="mt-6 flex justify-center">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleDownload}
+                  className="px-5 py-3 rounded-xl bg-blue-600 text-white shadow-md hover:shadow-lg"
+                >
+                  Download File
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
