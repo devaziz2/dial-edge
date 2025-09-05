@@ -103,6 +103,8 @@ export default function UploadCsvPage() {
         }
       );
 
+      localStorage.setItem("filename", res.data.filename);
+
       // set modal data and open modal
       setModalData(res.data);
       setIsModalOpen(true);
@@ -116,13 +118,14 @@ export default function UploadCsvPage() {
   const handleDownload = async () => {
     try {
       const token = localStorage.getItem("token");
+      const filename = localStorage.getItem("filename");
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/downloadFile`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/downloadFile?filename=${filename}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          responseType: "blob", // important for downloading files
+          responseType: "blob",
         }
       );
 
