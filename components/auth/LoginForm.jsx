@@ -48,8 +48,6 @@ export default function LoginForm() {
       }
       reset();
     } catch (error) {
-      console.error("Login error:", error);
-
       if (error.response && error.response.data?.message) {
         const errorMsg = error.response.data.message;
 

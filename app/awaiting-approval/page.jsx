@@ -43,7 +43,6 @@ export default function PendingApprovalPage() {
         toast.error("Your request is still pending.");
       }
     } catch (error) {
-      console.error("Refresh status check error:", error);
       toast.error("Failed to fetch status. Try again.");
     } finally {
       setLoading(false);
@@ -74,7 +73,6 @@ export default function PendingApprovalPage() {
           router.push("/login");
         }
       } catch (error) {
-        console.error("Initial status check error:", error);
         toast.error("Failed to fetch status. Try again.");
       }
     };

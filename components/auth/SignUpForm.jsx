@@ -37,8 +37,6 @@ export default function SignUpForm() {
       toast.success(res.data.message || "Verification email sent successfully");
       reset();
     } catch (error) {
-      console.error("Signup error:", error);
-
       if (error.response && error.response.data?.message) {
         toast.error(error.response.data.message);
       } else {
