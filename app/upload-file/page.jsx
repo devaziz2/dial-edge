@@ -111,7 +111,8 @@ export default function UploadCsvPage() {
 
       toast.success("File uploaded & cleaned successfully");
     } catch (err) {
-      toast.error("Error uploading file");
+      console.log(err.response.data.message);
+      toast.error(err.response.data.message);
     }
   };
 
