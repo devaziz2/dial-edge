@@ -22,6 +22,7 @@ export default function UploadCsvPage() {
   const [modalData, setModalData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const fileInputRef = useRef(null);
+  const [isCleaning, setisCleaning] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -88,6 +89,7 @@ export default function UploadCsvPage() {
     }
 
     try {
+      setisCleaning(true);
       const token = localStorage.getItem("token");
       const formData = new FormData();
       formData.append("file", file);
@@ -105,7 +107,6 @@ export default function UploadCsvPage() {
 
       localStorage.setItem("filename", res.data.filename);
 
-      // set modal data and open modal
       setModalData(res.data);
       setIsModalOpen(true);
 
@@ -113,6 +114,8 @@ export default function UploadCsvPage() {
     } catch (err) {
       console.log(err.response.data.message);
       toast.error(err.response.data.message);
+    } finally {
+      setisCleaning(false);
     }
   };
 
@@ -290,7 +293,7 @@ export default function UploadCsvPage() {
                 onClick={handleCleanData}
                 className="px-5 py-3 rounded-xl bg-green-600 text-white shadow-md hover:shadow-lg"
               >
-                Clean Data
+                {isCleaning ? "Cleaning..." : "Clean Data"}
               </motion.button>
             </div>
           )}
@@ -333,6 +336,11 @@ export default function UploadCsvPage() {
                 <p>
                   <span className="font-semibold">Mismatches:</span>{" "}
                   {modalData.mismatches}
+                </p>
+
+                <p>
+                  <span className="font-semibold">Duplicates:</span>{" "}
+                  {modalData.totalNumbersWithDuplicates}
                 </p>
               </div>
               <div className="mt-6 flex justify-center">
