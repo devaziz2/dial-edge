@@ -1,38 +1,53 @@
 @import "tailwindcss";
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap");
-
+/* Default variables */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #ffffff;
+  --text: #111827;
+  --card: #f9fafb;
+  --muted: #6b7280;
+  --btn-bg: #3b82f6;
+  --btn-text: #ffffff;
 }
 
-@theme {
-  --color-primary: #e04652;
-  --color-dark: #3e3838;
-  --color-light: #ffffff;
-
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-
-  --font-sans: "Inter", "Poppins", sans-serif;
-  --font-mono: "Courier New", monospace;
+/* Light theme */
+[data-theme="light"] {
+  --bg: #ffffff;
+  --text: #111827;
+  --card: #f9fafb;
+  --muted: #6b7280;
+  --btn-bg: #3b82f6;
+  --btn-text: #ffffff;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+/* Dark theme */
+[data-theme="dark"] {
+  --bg: #111827;
+  --text: #f9fafb;
+  --card: #1f2937;
+  --muted: #9ca3af;
+  --btn-bg: #6366f1;
+  --btn-text: #f9fafb;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+/* Utility classes using CSS vars */
+.bg-theme {
+  background-color: var(--bg);
 }
 
-input:-webkit-autofill {
-  background-color: transparent !important;
-  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
-  -webkit-text-fill-color: #000 !important;
-  transition: background-color 5000s ease-in-out 0s;
+.text-theme {
+  color: var(--text);
+}
+
+.bg-card {
+  background-color: var(--card);
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+.btn {
+  background-color: var(--btn-bg);
+  color: var(--btn-text);
 }
