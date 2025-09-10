@@ -108,6 +108,7 @@ export default function UploadCsvPage() {
       localStorage.setItem("filename", res.data.filename);
 
       setModalData(res.data);
+      console.log(res.data);
       setIsModalOpen(true);
 
       toast.success("File uploaded & cleaned successfully");
@@ -140,6 +141,7 @@ export default function UploadCsvPage() {
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.location.reload();
     } catch (err) {
       toast.error("Error downloading file");
     }
@@ -204,7 +206,7 @@ export default function UploadCsvPage() {
                   <thead>
                     <tr className="bg-green-600/95 border border-gray-300">
                       <th className="px-6 py-3 text-left font-semibold uppercase tracking-wide text-white border border-gray-300">
-                        voipNumber
+                        phone
                       </th>
                       <th className="px-6 py-3 border border-gray-300"></th>
                       <th className="px-6 py-3 border border-gray-300"></th>
@@ -243,8 +245,8 @@ export default function UploadCsvPage() {
               </div>
               <p className="mt-3 text-xs text-gray-500">
                 Tip: The CSV should contain a single column titled{" "}
-                <span className="font-semibold text-green-700">voipNumber</span>{" "}
-                with one number per row.
+                <span className="font-semibold text-green-700">phone</span> with
+                one number per row.
               </p>
             </motion.div>
           )}
@@ -326,20 +328,20 @@ export default function UploadCsvPage() {
               </h2>
               <div className="space-y-2 text-gray-700">
                 <p>
-                  <span className="font-semibold">Total Numbers:</span>{" "}
+                  <span className="font-semibold">Processed Numbers:</span>{" "}
                   {modalData.totalNumbers}
                 </p>
                 <p>
-                  <span className="font-semibold">Matches:</span>{" "}
+                  <span className="font-semibold">Matched Numbers:</span>{" "}
                   {modalData.matches}
                 </p>
                 <p>
-                  <span className="font-semibold">Mismatches:</span>{" "}
+                  <span className="font-semibold">Clean Numbers:</span>{" "}
                   {modalData.mismatches}
                 </p>
 
                 <p>
-                  <span className="font-semibold">Duplicates:</span>{" "}
+                  <span className="font-semibold">Uploaded Numbers:</span>{" "}
                   {modalData.totalNumbersWithDuplicates}
                 </p>
               </div>
