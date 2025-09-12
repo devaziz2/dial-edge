@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { CheckCircle2, Loader2, UserX, ShieldCheck } from "lucide-react";
+import {
+  CheckCircle2,
+  Loader2,
+  UserX,
+  ShieldCheck,
+  BanIcon,
+  UserRoundX,
+  UserMinus,
+} from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { BebasNeue } from "@/fonts/fonts";
 
@@ -66,6 +74,25 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleSuspend = async (userId) => {
+    setActionLoading(userId);
+    try {
+      await axios.post(
+        `http://144.76.65.130:3000/api/admin/users/suspendAccount/${userId}`
+      );
+      toast.success("User Suspended!");
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === userId ? { ...u, loginStatus: "Suspended" } : u
+        )
+      );
+    } catch (err) {
+      toast.error("Failed to reject user!");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   return (
     <div className="relative min-h-screen w-full bg-gray-100 flex flex-col items-center py-10">
       <Toaster position="top-center" />
@@ -99,7 +126,9 @@ export default function AdminUsersPage() {
                   <th className="px-6 py-4">ID</th>
                   <th className="px-6 py-4">Name</th>
                   <th className="px-6 py-4">Email</th>
+                  <th className="px-6 py-4">Company Name</th>
                   <th className="px-6 py-4">Status</th>
+
                   <th className="px-6 py-4 text-center">Action</th>
                   <th className="px-6 py-4">Created At</th>
                 </tr>
@@ -118,6 +147,8 @@ export default function AdminUsersPage() {
                       {user.firstname} {user.secondname}
                     </td>
                     <td className="px-6 py-4">{user.email}</td>
+                    <td className="px-6 py-4">{user.companyname}</td>
+
                     <td className="px-6 py-4">
                       {user.loginStatus === "Approved" ? (
                         <span className="text-green-600 font-semibold">
@@ -126,6 +157,10 @@ export default function AdminUsersPage() {
                       ) : user.loginStatus === "Rejected" ? (
                         <span className="text-red-600 font-semibold">
                           Rejected
+                        </span>
+                      ) : user.loginStatus === "Suspended" ? (
+                        <span className="text-red-600 font-semibold">
+                          Suspended
                         </span>
                       ) : (
                         <span className="text-yellow-600 font-semibold">
@@ -140,6 +175,10 @@ export default function AdminUsersPage() {
                         </Tooltip>
                       ) : user.loginStatus === "Rejected" ? (
                         <Tooltip label="User is rejected">
+                          <UserX className="w-6 h-6 text-red-500" />
+                        </Tooltip>
+                      ) : user.loginStatus === "Suspended" ? (
+                        <Tooltip label="User is suspended">
                           <UserX className="w-6 h-6 text-red-500" />
                         </Tooltip>
                       ) : (
@@ -168,6 +207,19 @@ export default function AdminUsersPage() {
                                 <Loader2 className="w-6 h-6 text-red-500 animate-spin" />
                               ) : (
                                 <UserX className="w-6 h-6 text-red-500 hover:scale-110 transition" />
+                              )}
+                            </button>
+                          </Tooltip>
+                          <Tooltip label="Suspend user">
+                            <button
+                              className="cursor-pointer"
+                              onClick={() => handleSuspend(user.id)}
+                              disabled={actionLoading === user.id}
+                            >
+                              {actionLoading === user.id ? (
+                                <Loader2 className="w-6 h-6 text-red-500 animate-spin" />
+                              ) : (
+                                <UserMinus className="w-6 h-6 text-red-500 hover:scale-110 transition" />
                               )}
                             </button>
                           </Tooltip>

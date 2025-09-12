@@ -39,6 +39,9 @@ export default function PendingApprovalPage() {
       } else if (newStatus === "rejected") {
         toast.error("Login request rejected.");
         router.push("/login");
+      } else if (newStatus === "suspended") {
+        toast.error("Account suspended.");
+        router.push("/login");
       } else {
         toast.error("Your request is still pending.");
       }

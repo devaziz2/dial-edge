@@ -41,8 +41,10 @@ export default function LoginForm() {
 
       const email = data.email?.trim().toLowerCase();
 
-      if (email === "afnan.malik@dialedgetelecom.com") {
+      if (email === "hammad.gul@dialedgetelecom.com") {
         router.push("/users");
+      } else if (res.data.user.loginStatus === "Approved") {
+        router.push("/upload-file");
       } else {
         router.push("/awaiting-approval");
       }

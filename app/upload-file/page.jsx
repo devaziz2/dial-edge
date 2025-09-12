@@ -40,7 +40,7 @@ export default function UploadCsvPage() {
           }
         );
 
-        if (res.status !== 201) {
+        if (res.status !== 200) {
           router.push("/login");
         }
       } catch (err) {
@@ -108,12 +108,10 @@ export default function UploadCsvPage() {
       localStorage.setItem("filename", res.data.filename);
 
       setModalData(res.data);
-      console.log(res.data);
       setIsModalOpen(true);
 
       toast.success("File uploaded & cleaned successfully");
     } catch (err) {
-      console.log(err.response.data.message);
       toast.error(err.response.data.message);
     } finally {
       setisCleaning(false);

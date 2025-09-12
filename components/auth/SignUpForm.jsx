@@ -25,6 +25,7 @@ export default function SignUpForm() {
           firstname: data.firstName,
           lastname: data.lastName,
           email: data.email,
+          companyname: data.company,
           password: data.password,
         },
         {
@@ -89,6 +90,14 @@ export default function SignUpForm() {
           icon="Mail"
           register={register("email", { required: "Email is required" })}
           error={errors.email?.message}
+        />
+
+        <Input
+          label="Company name"
+          type="text"
+          icon="building"
+          register={register("company", { required: "Company is required" })}
+          error={errors.company?.message}
         />
 
         <Input
