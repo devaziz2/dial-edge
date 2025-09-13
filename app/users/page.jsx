@@ -170,13 +170,43 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="px-6 py-4 text-center">
                       {user.loginStatus === "Approved" ? (
-                        <Tooltip label="User is approved">
-                          <CheckCircle2 className="w-6 h-6 text-green-500" />
-                        </Tooltip>
+                        <div className="flex items-center gap-1.5">
+                          <Tooltip label="User is approved">
+                            <CheckCircle2 className="w-6 h-6 text-green-500" />
+                          </Tooltip>
+                          <Tooltip label="Suspend user">
+                            <button
+                              className="cursor-pointer"
+                              onClick={() => handleSuspend(user.id)}
+                              disabled={actionLoading === user.id}
+                            >
+                              {actionLoading === user.id ? (
+                                <Loader2 className="w-6 h-6 text-red-500 animate-spin" />
+                              ) : (
+                                <UserX className="w-6 h-6 text-red-500 hover:scale-110 transition" />
+                              )}
+                            </button>
+                          </Tooltip>
+                        </div>
                       ) : user.loginStatus === "Rejected" ? (
-                        <Tooltip label="User is rejected">
-                          <UserX className="w-6 h-6 text-red-500" />
-                        </Tooltip>
+                        <div className="flex items-center gap-1.5">
+                          <Tooltip label="User is rejected">
+                            <UserX className="w-6 h-6 text-red-500" />
+                          </Tooltip>
+                          <Tooltip label="Suspend user">
+                            <button
+                              className="cursor-pointer"
+                              onClick={() => handleSuspend(user.id)}
+                              disabled={actionLoading === user.id}
+                            >
+                              {actionLoading === user.id ? (
+                                <Loader2 className="w-6 h-6 text-red-500 animate-spin" />
+                              ) : (
+                                <UserX className="w-6 h-6 text-red-500 hover:scale-110 transition" />
+                              )}
+                            </button>
+                          </Tooltip>
+                        </div>
                       ) : user.loginStatus === "Suspended" ? (
                         <Tooltip label="User is suspended">
                           <UserX className="w-6 h-6 text-red-500" />
@@ -207,19 +237,6 @@ export default function AdminUsersPage() {
                                 <Loader2 className="w-6 h-6 text-red-500 animate-spin" />
                               ) : (
                                 <UserX className="w-6 h-6 text-red-500 hover:scale-110 transition" />
-                              )}
-                            </button>
-                          </Tooltip>
-                          <Tooltip label="Suspend user">
-                            <button
-                              className="cursor-pointer"
-                              onClick={() => handleSuspend(user.id)}
-                              disabled={actionLoading === user.id}
-                            >
-                              {actionLoading === user.id ? (
-                                <Loader2 className="w-6 h-6 text-red-500 animate-spin" />
-                              ) : (
-                                <UserMinus className="w-6 h-6 text-red-500 hover:scale-110 transition" />
                               )}
                             </button>
                           </Tooltip>
