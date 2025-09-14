@@ -183,7 +183,7 @@ export default function AdminUsersPage() {
                               {actionLoading === user.id ? (
                                 <Loader2 className="w-6 h-6 text-red-500 animate-spin" />
                               ) : (
-                                <UserX className="w-6 h-6 text-red-500 hover:scale-110 transition" />
+                                <UserMinus className="w-6 h-6 text-red-500 hover:scale-110 transition" />
                               )}
                             </button>
                           </Tooltip>
@@ -202,14 +202,14 @@ export default function AdminUsersPage() {
                               {actionLoading === user.id ? (
                                 <Loader2 className="w-6 h-6 text-red-500 animate-spin" />
                               ) : (
-                                <UserX className="w-6 h-6 text-red-500 hover:scale-110 transition" />
+                                <UserMinus className="w-6 h-6 text-red-500 hover:scale-110 transition" />
                               )}
                             </button>
                           </Tooltip>
                         </div>
                       ) : user.loginStatus === "Suspended" ? (
                         <Tooltip label="User is suspended">
-                          <UserX className="w-6 h-6 text-red-500" />
+                          <UserMinus className="w-6 h-6 text-red-500" />
                         </Tooltip>
                       ) : (
                         <div className="flex items-center justify-center gap-4">

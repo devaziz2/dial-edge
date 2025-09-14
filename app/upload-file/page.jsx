@@ -55,11 +55,11 @@ export default function UploadCsvPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      window.location.reload();
-    }, 2 * 60 * 1000); // 2 minutes
+      router.push("/login");
+    }, 2 * 60 * 1000);
 
-    return () => clearTimeout(timer); // cleanup on unmount
-  }, []);
+    return () => clearTimeout(timer);
+  }, [router]);
 
   const handleToggleExample = () => setShowExample((s) => !s);
 
